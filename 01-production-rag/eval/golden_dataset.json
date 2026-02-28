@@ -1,0 +1,17 @@
+[
+    {
+        "question": "What is the token overlap used in this system?",
+        "ground_truth": "The system uses approximately a 100-token overlap to preserve context across chunk boundaries.",
+        "context": [
+            "Chunking Strategy: Implement 500-800 token chunks with a ~100 token overlap to preserve context.",
+            "Data Ingestion: Support PDF, Markdown, or Web pages."
+        ]
+    },
+    {
+        "question": "Which database is used for vector storage?",
+        "ground_truth": "The system uses ChromaDB for vector storage.",
+        "context": [
+            "Vector Storage: Store embeddings in a vector database (ChromaDB or Weaviate)."
+        ]
+    }
+]
