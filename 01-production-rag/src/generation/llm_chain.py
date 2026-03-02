@@ -2,13 +2,15 @@ import yaml
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from langchain_core.messages import HumanMessage, AIMessage
 
 class GenerationChain:
     def __init__(self, llm_provider: str = "gemini"):
         self.llm_provider = llm_provider
+        self.chat_history = []
         self._load_prompts()
         self._init_llm()
 
@@ -39,17 +41,24 @@ class GenerationChain:
             formatted.append(f"[Document {i+1} | Source: {source} | Page: {page}]\n{doc.page_content}")
         return "\n\n---\n\n".join(formatted)
 
-    def get_chain(self, retriever):
-        """
-        Builds the RAG chain using the provided retriever and selected LLM.
-        """
-        prompt = ChatPromptTemplate.from_messages([
+    def _build_prompt(self):
+        """Builds a prompt template that includes conversation history."""
+        return ChatPromptTemplate.from_messages([
             ("system", self.prompts.get("system_prompt")),
+            MessagesPlaceholder(variable_name="chat_history"),
             ("human", self.prompts.get("human_prompt"))
         ])
 
+    def get_chain(self, retriever):
+        """Builds the RAG chain with conversation memory support."""
+        prompt = self._build_prompt()
+
         rag_chain = (
-            {"context": retriever | self._format_docs, "question": RunnablePassthrough()}
+            {
+                "context": lambda x: self._format_docs(retriever.invoke(x["question"])),
+                "question": lambda x: x["question"],
+                "chat_history": lambda x: x["chat_history"]
+            }
             | prompt
             | self.llm
             | StrOutputParser()
@@ -57,6 +66,31 @@ class GenerationChain:
         return rag_chain
 
     def answer(self, question: str, retriever):
-        """Generates an answer to the given question based strictly on retrieved context."""
+        """Generates an answer and updates conversation history."""
         chain = self.get_chain(retriever)
-        return chain.invoke(question)
+        response = chain.invoke({
+            "question": question,
+            "chat_history": self.chat_history
+        })
+        # Update memory
+        self.chat_history.append(HumanMessage(content=question))
+        self.chat_history.append(AIMessage(content=response))
+        return response
+
+    def stream(self, question: str, retriever):
+        """Streams an answer token-by-token and updates conversation history."""
+        chain = self.get_chain(retriever)
+        full_response = ""
+        for chunk in chain.stream({
+            "question": question,
+            "chat_history": self.chat_history
+        }):
+            full_response += chunk
+            yield chunk
+        # Update memory after stream completes
+        self.chat_history.append(HumanMessage(content=question))
+        self.chat_history.append(AIMessage(content=full_response))
+
+    def clear_history(self):
+        """Resets conversation memory."""
+        self.chat_history = []
