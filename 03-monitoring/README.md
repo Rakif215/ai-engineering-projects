@@ -6,6 +6,8 @@ This project adds a full observability layer on top of the RAG system built in P
 
 ## Architecture
 
+![System Architecture](assets/architecture.png)
+
 ```
 User Query
     │
@@ -75,7 +77,9 @@ python seed_metrics.py
 ```bash
 streamlit run dashboard.py
 ```
-Open **http://localhost:8501**
+Open **http://localhost:8501** (or 8502 if 8501 is occupied).
+
+![Dashboard UI](assets/ui_screenshot.png)
 
 ### 5. Run a Monitored Query
 ```python

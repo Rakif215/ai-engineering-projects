@@ -13,6 +13,8 @@ Many AI applications fail in production because they hallucinate, lack domain-sp
 
 ## System Architecture
 
+![System Architecture](assets/architecture.png)
+
 The "Ask My Doc" system employs a 3-phase progression to achieve production readiness:
 
 1.  **Fundamentals (Data & Retrieval)**
@@ -42,6 +44,12 @@ The "Ask My Doc" system employs a 3-phase progression to achieve production read
 *   **% Faithfulness (RAGAS):** Targeting >95% adherence to context.
 *   **P95 Retrieval Latency:** Measuring vector search + reranking bottlenecks.
 
+## UI Showcase
+
+The project features a polished Streamlit interface with multi-document upload, live answer streaming, and conversation memory.
+
+![Streamlit UI](assets/ui_screenshot.png)
+
 ---
 
 ### Setup Instructions
@@ -53,4 +61,8 @@ The "Ask My Doc" system employs a 3-phase progression to achieve production read
     *   `GEMINI_API_KEY`
     *   `GROQ_API_KEY`
     *   `COHERE_API_KEY` (for reranking)
-5.  Run the ingestion script to populate the vector database.
+5.  To launch the Streamlit web interface:
+    ```bash
+    streamlit run app.py
+    ```
+    Then open **http://localhost:8501** in your browser.
