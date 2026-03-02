@@ -33,12 +33,21 @@ class GenerationChain:
             self.llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
             
     def _format_docs(self, docs):
-        """Formats the retrieved documents into a single string with numbering for citations."""
+        """Formats retrieved chunks into a context string.
+        
+        Citation labels use the actual filename + page number so that
+        one PDF with 3 retrieved chunks does NOT appear as 3 separate 'Documents'.
+        Example: [project 1.pdf, p.2]
+        """
         formatted = []
         for i, doc in enumerate(docs):
-            source = doc.metadata.get("source", "Unknown")
-            page = doc.metadata.get("page", "Unknown")
-            formatted.append(f"[Document {i+1} | Source: {source} | Page: {page}]\n{doc.page_content}")
+            raw_source = doc.metadata.get("source", "Unknown")
+            # Use just the basename so paths don't clutter citations
+            source = os.path.basename(raw_source) if raw_source != "Unknown" else "Unknown"
+            page = doc.metadata.get("page", "")
+            page_label = f", p.{int(page)+1}" if page != "" else ""
+            citation = f"[{source}{page_label}]"
+            formatted.append(f"{citation}\n{doc.page_content}")
         return "\n\n---\n\n".join(formatted)
 
     def _build_prompt(self):
