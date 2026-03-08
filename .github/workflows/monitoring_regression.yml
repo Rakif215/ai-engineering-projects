@@ -1,0 +1,44 @@
+name: RAG Regression Gate
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "01-production-rag/**"
+      - "03-monitoring/**"
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./03-monitoring
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Regression Evaluation
+      env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+        LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+        LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+      run: |
+        python src/regression.py
+
+    - name: Upload Regression Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: regression-report
+        path: 03-monitoring/regression_report.json
