@@ -13,9 +13,26 @@ Many AI applications fail in production because they hallucinate, lack domain-sp
 
 ## System Architecture
 
-![System Architecture](assets/architecture.png)
+```mermaid
+graph TD
+    A[User Query] --> B[Hybrid Retrieval]
+    B -->|BM25 + Semantic| C[(ChromaDB)]
+    C --> D[Top K Chunks]
+    D --> E{Cross-Encoder Reranker}
+    E --> F[High-Relevance Chunks]
+    F --> G{Citation Grounding Gate}
+    G -->|Evidence Found| H[Verified Answer]
+    G -->|Insufficient Context| I[Safe Refusal]
+    
+    classDef safe fill:#10b981,stroke:#047857,color:white;
+    classDef refuse fill:#6366f1,stroke:#4338ca,color:white;
+    classDef database fill:#f59e0b,stroke:#b45309,color:white;
+    class H safe;
+    class I refuse;
+    class C database;
+```
 
-The "Ask My Doc" system employs a 3-phase progression to achieve production readiness:
+The Veritas system employs a 3-phase progression to achieve production readiness:
 
 1.  **Fundamentals (Data & Retrieval)**
     *   **Data Ingestion:** Supports PDF, Markdown, and Web pages.
@@ -46,9 +63,9 @@ The "Ask My Doc" system employs a 3-phase progression to achieve production read
 
 ## UI Showcase
 
-The project features a polished Streamlit interface with multi-document upload, live answer streaming, and conversation memory.
+The project features a polished React interface demonstrating a side-by-side comparison between Standard RAG and Veritas, highlighting the hallucination vs. safe refusal scenario in high-stakes clinical domains.
 
-![Streamlit UI](assets/ui_screenshot.png)
+![Veritas UI Comparison](assets/veritas_hero_screenshot.png)
 
 ---
 
