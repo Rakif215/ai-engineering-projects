@@ -57,7 +57,7 @@ The repository includes a side-by-side comparison UI. You can test a query again
 ### 1. Setup Backend (FastAPI)
 
 ```bash
-cd 01-production-rag
+cd 01-production-rag/backend
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
@@ -78,7 +78,7 @@ uvicorn api:app --port 8000 --reload
 
 In a new terminal:
 ```bash
-cd 01-production-rag/rag-comparison
+cd 01-production-rag/frontend
 npm install
 npm run dev
 ```
