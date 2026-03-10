@@ -1,4 +1,4 @@
-# AI Engineering Portfolio
+# AI Engineering Projects
 
 Welcome to my AI Engineering Portfolio! This repository is a collection of 5 distinct, production-grade AI systems, designed to demonstrate a comprehensive understanding of the modern AI engineering lifecycle—from prototype to production.
 
