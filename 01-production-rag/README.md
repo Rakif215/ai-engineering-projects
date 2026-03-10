@@ -1,17 +1,14 @@
-# AI Engineering Portfolio: Production-Grade RAG
+# Veritas
 
-## Core AI Engineering Competencies
+A production-grade Medical RAG (Retrieval-Augmented Generation) system built to solve one specific problem: **LLM Hallucination in high-stakes domains.**
 
-This project is part of a broader "Production Lifecycle" portfolio, demonstrating the capacity to build reliable, scalable, and observable AI systems—moving beyond simple demos into production-ready engineering.
+Most RAG tutorials focus on getting an LLM to answer questions using your data. In production (especially healthcare), the much harder problem is getting the LLM to **safely refuse** when the context doesn't contain the answer.
 
-**Focus Area:** Architected a production-grade RAG pipeline with automated CI/CD evaluation and real-time observability.
-**Message:** "I don't just build chatbots; I build reliable, monitorable systems."
+Standard RAG will confidently invent pediatric drug dosages if the context is sparse. Veritas uses hybrid retrieval, cross-encoder reranking, and strict citation grounding to enforce a "no evidence, no answer" policy.
 
-## The Business Problem
+## Architecture
 
-Many AI applications fail in production because they hallucinate, lack domain-specific grounding, or degrade silently over time. This project solves for **reliability and trust** by ensuring every generated claim is explicitly backed by retrieved context, and introducing automated evaluation gates to catch regressions before they hit production.
-
-## System Architecture
+We use a 3-stage pipeline to guarantee grounded responses:
 
 ```mermaid
 graph TD
@@ -32,54 +29,58 @@ graph TD
     class C database;
 ```
 
-The Veritas system employs a 3-phase progression to achieve production readiness:
+### The Stack
 
-1.  **Fundamentals (Data & Retrieval)**
-    *   **Data Ingestion:** Supports PDF, Markdown, and Web pages.
-    *   **Vector Storage:** Local ChromaDB instance for fast prototyping.
-    *   **Chunking:** 500-800 token chunks with ~100 token overlap to maintain context across boundaries.
-2.  **Production Quality (Hybrid Search & Reranking)**
-    *   **Hybrid Retrieval:** Combines BM25 (keyword search) with Semantic (vector search) for higher recall.
-    *   **Re-ranking:** Utilizes Cohere's Cross-Encoder to rescore and refine retrieved chunks.
-    *   **LLMs:** Leverages **Google Gemini** for generation and embeddings, integrated with **Groq** for ultra-low latency specific tasks.
-    *   **Citation Enforcement:** Strict prompting config to force the LLM to decline queries if context is missing, minimizing hallucinations.
-3.  **Evaluation & CI/CD (RAGAS)**
-    *   **Golden Dataset:** Curated Q&A pairs for continuous testing.
-    *   **Metrics:** RAGAS "Faithfulness" checking ensures claims exactly match the retrieved context.
-    *   **CI/CD:** GitHub Actions block deployments if evaluation metrics drop below a threshold.
+- **Vector Store:** Local ChromaDB (easy to swap for managed equivalent)
+- **Retrieval:** Hybrid BM25 + Semantic Vector Search for higher recall
+- **Reranking:** Cohere Cross-Encoder (filters out low-relevance semantic hits)
+- **Generation:** Groq (Llama-3) / Google Gemini with strict grounding prompts
+- **Evaluation:** RAGAS framework running 'Faithfulness' checks (CI/CD gated)
+- **Frontend:** React + Vite
 
-## Technical Deep Dive: Trade-offs & Decisions
+## The Hallucination Fix
 
-*   **ChromaDB over Cloud Vector DBs:** For this specific iteration, a local ChromaDB instance was chosen to reduce latency during development and avoid unnecessary cloud costs. It seamlessly transitions to a persistent client if scaled.
-*   **Gemini + Groq Hybrid Generation:** Gemini provides excellent reasoning and context windows for complex document analysis, while Groq is introduced for scenarios requiring near-instantaneous token generation.
-*   **The Hallucination Fix:** Initially, RAG systems often guess when context is sparse. The implementation of a Cross-Encoder (Cohere reranking) coupled with explicit Prompt Management forces the system to say "I don't know" rather than fabricating an answer, drastically cutting down false claims.
+Vector search often returns documents that are *semantically similar* to the question, but don't actually contain the answer. 
 
-## Metrics to Watch
+Instead of passing these directly to the LLM (which encourages guessing), we use a cross-encoder to score relevance. If the score is low, or the LLM cannot explicitly cite the chunk, the system defaults to a safe refusal.
 
-*(To be populated as the system is deployed and benchmarked)*
-*   **Tokens/Sec Generation Rate:** Targeting sub-second latency with Groq.
-*   **% Faithfulness (RAGAS):** Targeting >95% adherence to context.
-*   **P95 Retrieval Latency:** Measuring vector search + reranking bottlenecks.
+## UI Demo
 
-## UI Showcase
+The repository includes a side-by-side comparison UI. You can test a query against both a naive RAG pipeline and the Veritas safety pipeline.
 
-The project features a polished React interface demonstrating a side-by-side comparison between Standard RAG and Veritas, highlighting the hallucination vs. safe refusal scenario in high-stakes clinical domains.
-
-![Veritas UI Comparison](assets/veritas_hero_screenshot.png)
+![Veritas UI Comparison](../linkedin_screenshots/1_hero_comparison_perfect.png)
 
 ---
 
-### Setup Instructions
+## Running Locally
 
-1.  Clone the repository.
-2.  Create a virtual environment: `python -m venv venv`
-3.  Install dependencies: `pip install -r requirements.txt`
-4.  Copy `.env.example` to `.env` and fill in your API keys:
-    *   `GEMINI_API_KEY`
-    *   `GROQ_API_KEY`
-    *   `COHERE_API_KEY` (for reranking)
-5.  To launch the Streamlit web interface:
-    ```bash
-    streamlit run app.py
-    ```
-    Then open **http://localhost:8501** in your browser.
+### 1. Setup Backend (FastAPI)
+
+```bash
+cd 01-production-rag
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+```
+
+Create a `.env` file in this directory and add your keys:
+```env
+GROQ_API_KEY=your_key_here
+COHERE_API_KEY=your_key_here
+```
+
+Start the API:
+```bash
+uvicorn api:app --port 8000 --reload
+```
+
+### 2. Setup Frontend (React)
+
+In a new terminal:
+```bash
+cd 01-production-rag/rag-comparison
+npm install
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.

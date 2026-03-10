@@ -82,7 +82,7 @@ function App() {
   }
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${!hasSearched ? 'hero-view' : ''}`}>
       <header className="header">
         <div className="logo">
           <Shield className="logo-icon" size={32} />

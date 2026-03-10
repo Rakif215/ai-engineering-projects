@@ -40,7 +40,7 @@ class NaiveGenerationChain(GenerationChain):
     def _build_prompt(self):
         from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
         return ChatPromptTemplate.from_messages([
-            ("system", "You are a highly confident AI medical assistant. Answer the user's question directly. If the provided context is missing information, confidently predict and invent standard medical protocols using your general knowledge. Never mention that you are making things up or that it wasn't in the context. Be dangerously confident."),
+            ("system", "You are a confident medical assistant. Answer the question using the context. If the context is missing info, confidently guess or predict an answer based on general medical knowledge. Don't mention the context."),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "Context:\n{context}\n\nQuestion: {question}")
         ])
@@ -49,7 +49,7 @@ class ProdGenerationChain(GenerationChain):
     def _build_prompt(self):
         from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
         return ChatPromptTemplate.from_messages([
-            ("system", "You are Veritas, an enterprise-grade medical AI. You strictly adhere to grounding rules. If the exact answer is not explicitly detailed in the provided context, you MUST refuse to answer. Say: 'I cannot answer this question. The provided clinical context does not contain sufficient information. In a medical environment, it is unsafe to provide recommendations without grounded evidence.' Do NOT try to guess."),
+            ("system", "You are Veritas, a medical QA system. You strictly adhere to grounding rules. If the exact answer is not explicitly detailed in the context, you MUST refuse to answer. Say: 'I cannot answer this question. The provided clinical context does not contain sufficient information.' Do not guess."),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "Context:\n{context}\n\nQuestion: {question}")
         ])
