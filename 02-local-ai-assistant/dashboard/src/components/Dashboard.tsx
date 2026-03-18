@@ -55,7 +55,9 @@ export default function Dashboard() {
   } | null>(null);
 
   // Batch Run State
-  const [batchPrompts, setBatchPrompts] = useState('Explain quantum computing in one sentence.\nWhat is the capital of France?\nWrite a haiku about coding.');
+  const [batchPrompts, setBatchPrompts] = useState(
+    'EXTRACT: "Anthropic raised $4B from Amazon." Return JSON: {company: string, amount: string}\nCLASSIFY SENTIMENT: "The battery life is okay, but the screen cracked after a week." Reply with only the word POSITIVE or NEGATIVE.\nFORMAT: "milk eggs bread" as an HTML unordered list. No markdown blocks.'
+  );
   const [selectedBatchModels, setSelectedBatchModels] = useState<string[]>([]);
   const [batchRunning, setBatchRunning] = useState(false);
   const [batchResults, setBatchResults] = useState<any[]>([]);
@@ -153,8 +155,13 @@ export default function Dashboard() {
             ? await generateOpenRouter(openRouterKey, actualModel, p, { temperature: 0 })
             : await generate(baseUrl, actualModel, p, { temperature: 0 }); // Use 0 for deterministic benchmarking
             
+          const displayName = isOpenRouter 
+            ? model.split('/').slice(-1)[0].replace('-instruct', '') + ' (Cloud)'
+            : model.replace(':latest', '');
+
           results.push({
             model,
+            displayName,
             promptIndex: i + 1,
             ttft: res.metrics.ttft,
             tps: res.metrics.tps,
@@ -163,8 +170,13 @@ export default function Dashboard() {
           });
           setBatchResults([...results]);
         } catch (e) {
+          const displayName = isOpenRouter 
+            ? model.split('/').slice(-1)[0].replace('-instruct', '') + ' (Cloud)'
+            : model.replace(':latest', '');
+
           results.push({
             model,
+            displayName,
             promptIndex: i + 1,
             ttft: 0,
             tps: 0,
@@ -192,10 +204,10 @@ export default function Dashboard() {
       ? model.split('/').slice(-1)[0].replace('-instruct', '') 
       : model.replace(':latest', '');
       
-    if (modelResults.length === 0) return { model, displayName, avgTtft: 0, avgTps: 0, avgLatency: 0 };
+    if (modelResults.length === 0) return { model, displayName: modelResults[0]?.displayName || model, avgTtft: 0, avgTps: 0, avgLatency: 0 };
     return {
       model,
-      displayName,
+      displayName: modelResults[0].displayName,
       avgTtft: modelResults.reduce((sum, r) => sum + r.ttft, 0) / modelResults.length,
       avgTps: modelResults.reduce((sum, r) => sum + r.tps, 0) / modelResults.length,
       avgLatency: modelResults.reduce((sum, r) => sum + r.latency, 0) / modelResults.length,
@@ -460,7 +472,7 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'batch' && (
-          <div className="p-8 max-w-6xl mx-auto space-y-8">
+          <div className="p-8 max-w-7xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">Multi-Model Comparison Study</h2>
               <button 
@@ -514,7 +526,7 @@ export default function Dashboard() {
                     <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 h-96">
                       <h3 className="text-sm font-medium text-gray-400 mb-6 text-center">Tokens Per Second (Higher is better)</h3>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart layout="vertical" data={aggregatedResults} margin={{ top: 0, right: 20, left: 40, bottom: 0 }}>
+                        <BarChart layout="vertical" data={aggregatedResults} margin={{ top: 0, right: 20, left: 100, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
                           <XAxis type="number" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
                           <YAxis type="category" dataKey="displayName" stroke="#888" fontSize={11} width={120} tickLine={false} axisLine={false} />
@@ -526,7 +538,7 @@ export default function Dashboard() {
                     <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-6 h-96">
                       <h3 className="text-sm font-medium text-gray-400 mb-6 text-center">Time to First Token (Lower is better)</h3>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart layout="vertical" data={aggregatedResults} margin={{ top: 0, right: 20, left: 40, bottom: 0 }}>
+                        <BarChart layout="vertical" data={aggregatedResults} margin={{ top: 0, right: 20, left: 100, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
                           <XAxis type="number" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
                           <YAxis type="category" dataKey="displayName" stroke="#888" fontSize={11} width={120} tickLine={false} axisLine={false} />
@@ -555,7 +567,7 @@ export default function Dashboard() {
                         <tbody className="divide-y divide-[#2A2A2A]">
                           {batchResults.map((r, i) => (
                             <tr key={i} className="hover:bg-[#222]/50 transition-colors">
-                              <td className="px-6 py-4 font-medium">{r.model}</td>
+                              <td className="px-6 py-4 font-medium" title={r.model}>{r.displayName}</td>
                               <td className="px-6 py-4 text-gray-400">#{r.promptIndex}</td>
                               <td className="px-6 py-4 font-mono">{(r.ttft / 1000).toFixed(2)}</td>
                               <td className="px-6 py-4 font-mono">{r.tps.toFixed(1)}</td>
