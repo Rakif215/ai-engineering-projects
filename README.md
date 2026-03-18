@@ -10,10 +10,10 @@ A specialized "Ask My Docs" system built to refuse answers when context is missi
 - **Stack:** Llama-3.1 (Groq) / Gemini, ChromaDB, HuggingFace embeddings, Cohere Rerank.
 - **Frontend:** React + Vite
 
-### 2. Local AI Assistant (Coming Soon)
-A fully local, privacy-first agent utilizing Small Language Models (SLMs).
-- **Core:** Quantization (GGUF), Local Execution, On-device Workflows.
-- **Stack:** Ollama, Llama.cpp, Llama-3-8B-Instruct.
+### 2. [Local AI Benchmarking & Evaluation](./02-local-ai-assistant/)
+A privacy-first local AI benchmarking suite using Small Language Models (SLMs) optimized for an 8GB Unified Memory footprint. Includes a UI for rigorously measuring and comparing model performance.
+- **Core:** Structured Output (JSON Enforcing), Latency Tracking (TTFT, TPS), Quantization Benchmarking.
+- **Stack:** Ollama, Llama 3.2 3B, Qwen 2.5 1.5B, Phi-3 Mini 3.8B, React Dashboard.
 
 ### 3. AI Monitoring & Observability (Coming Soon)
 A production telemetry layer for tracking token costs, latency, and quality drift in real-time.

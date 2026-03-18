@@ -1,0 +1,5 @@
+{
+  "name": "Local SLM Benchmark Dashboard",
+  "description": "A privacy-focused local AI assistant benchmarking tool for Small Language Models (SLMs) using Ollama. Tests TTFT, TPS, JSON enforcement, and multi-model comparisons.",
+  "requestFramePermissions": []
+}
