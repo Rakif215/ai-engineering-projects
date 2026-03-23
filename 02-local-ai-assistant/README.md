@@ -1,52 +1,107 @@
-# Project 2: Local AI Assistant & Benchmarking
+# Project 2: Local SLM Benchmarking Dashboard
 
-The second project in the AI Engineering Project portfolio focuses on creating a reliable, privacy-first local AI assistant using Small Language Models (SLMs) via Ollama. 
+> *"On hardware-constrained devices, smaller models aren't a compromise — they're the correct engineering decision."*
 
-Instead of just hooking up a chat interface to a massive cloud model, this project explores the engineering rigor required to evaluate and run models under strict hardware constraints (specifically, an 8GB RAM threshold) without sacrificing structured data output capability.
+The second project in the AI Engineering portfolio. Instead of just connecting a chat interface to a cloud API, this project rigorously **measures, compares, and visualizes** the performance of Small Language Models (SLMs) running locally on an Apple M2 (8GB RAM) — a real constraint that forces real engineering decisions.
 
-## Overview
-A common pitfall in local AI development is selecting models that are too large for the host machine's unified memory, leading to severe SSD swapping, crashed daemons, and tokens-per-second (TPS) rates in the single digits. 
+---
 
-This project tackles that constraint head-on by benchmarking three highly optimized, sub-4B parameter SLMs to identify the most performant baseline for local intelligent agents.
+## The Hypothesis
 
-### Evaluated Models
-1. **Llama 3.2 (3B)** - Meta's highly capable edge-optimized completion model (~2GB VRAM at Q4).
-2. **Qwen 2.5 (1.5B)** - Alibaba's state-of-the-art multilingual and reasoning SLM (~1GB VRAM at Q4).
-3. **Phi-3 Mini (3.8B)** - Microsoft's dense model trained on synthetic, high-quality data (~2.3GB VRAM at Q4).
+Most developers default to the largest available model. This project tests a different thesis:
 
-## The Benchmarking Engine
-To rigorously test these models, a React-based **Local SLM Benchmark Dashboard** was developed. It connects directly to the local Ollama REST API (and optionally the OpenRouter API for cloud baselining) to monitor performance in real-time.
+> **For structured, constrained tasks (data extraction, classification, formatting), a locally-run 1.5B parameter model can outperform a cloud-hosted 8B model on the metrics that matter for production: latency, throughput, and operational cost.**
 
-### Key Features
-- **Benchmarking Engine:** Accurately measures Time to First Token (TTFT) and Generation Speed (Tokens/sec).
-- **Schema Enforcement:** Forces output into a strict JSON schema using Zod, testing the local inference structure capabilities.
-- **Self-Healing Loop:** Built-in "Retry-once" logic—if a local model outputs invalid JSON, the app automatically feeds the error back for a correction attempt.
-- **Batch Evaluation:** Compares multiple models sequentially across a standardized prompt dataset, producing visual analytics (Recharts).
+---
+
+## The Benchmarking Dashboard
+
+A fully custom **React + TypeScript analytics dashboard** that connects directly to the local Ollama API and the OpenRouter cloud API to run head-to-head model comparisons.
+
+### Dashboard Features
+
+| Feature | Description |
+|---|---|
+| **Winner Podium** | Auto-computed hero cards showing best TPS, best TTFT, and most consistent model after each benchmark run |
+| **Grouped Cold/Warm Charts** | Bar charts split "Cold Start (Run 1)" vs "Warm Average" to surface memory-swap penalties |
+| **Log-Scale TTFT Chart** | Logarithmic axis prevents outliers (e.g. 18s Phi-3 cold start) from making all other bars look flat |
+| **Auto-Generated Insights** | 3 intelligence cards auto-populated from results: Memory Pressure Alert, Cloud vs Local winner, Consistency Winner |
+| **Enhanced Results Table** | Green/red highlighting for best/worst values per column, Cold/Warm run badges, and a TPS Consistency (std. dev.) column |
+| **Cloud Baseline Comparison** | OpenRouter integration brings in Gemini 2.5 Flash and Llama 3.1 8B as cloud controls |
+| **Self-Healing JSON Output** | Structured output mode with Zod schema validation and automatic retry-on-parse-failure |
+
+---
+
+## Models Evaluated
+
+| Model | Parameters | VRAM (Q4) | Origin |
+|---|---|---|---|
+| Qwen 2.5 | 1.5B | ~1GB | Local (Ollama) |
+| Llama 3.2 | 3B | ~2GB | Local (Ollama) |
+| Phi-3 Mini | 3.8B | ~2.3GB | Local (Ollama) |
+| Llama 3.1 Instruct | 8B | Cloud | OpenRouter |
+| Gemini 2.5 Flash | — | Cloud | OpenRouter |
+
+---
+
+## Key Findings
+
+- 🏆 **Qwen 2.5 (1.5B)** achieved **101+ TPS** on warm runs — beating the 8B cloud model's streaming rate
+- ⚠️ **Phi-3 Mini** showed an 18s cold TTFT on first load, exposing **macOS SSD swap** behaviour when weights exceed unified memory
+- ✅ After warm-loading, local models consistently outperformed cloud models on **tokens-per-second**, proving zero-network-overhead is a real advantage for streaming tasks
+
+---
 
 ## Setup & Running Locally
 
-### 1. Start Ollama with CORS Enabled
-The web dashboard needs to communicate with your local Ollama daemon. You must start Ollama explicitly allowing cross-origin requests.
+### Prerequisites
+- [Ollama](https://ollama.com) installed
+- Node.js 18+
+- OpenRouter API key *(optional, for cloud baseline)*
 
-**Mac / Linux Terminal:**
+### 1. Start Ollama with CORS Enabled
 ```bash
 OLLAMA_ORIGINS="*" ollama serve
 ```
-*(If Ollama is already running as a menu-bar application, you must fully quit it first.)*
+> If Ollama is already running as a menu-bar app, you must fully quit it first, then run this command.
 
-### 2. Pull Required Models
-In a separate terminal, pull the memory-optimized models:
+### 2. Pull the Models
 ```bash
-ollama pull llama3.2
 ollama pull qwen2.5:1.5b
+ollama pull llama3.2
 ollama pull phi3
 ```
 
-### 3. Start the Benchmark Dashboard
+### 3. Start the Dashboard
 ```bash
 cd dashboard
 npm install
 npm run dev
 ```
 
-Visit the dashboard URL (typically `http://localhost:3000`), ensure the Ollama URL is registered correctly (`http://localhost:11434`), and start benchmarking!
+Open `http://localhost:3000` → **Connection** tab → click **Refresh Models**.
+
+*(Optionally paste your OpenRouter key to load cloud baselines.)*
+
+---
+
+## Project Structure
+
+```
+02-local-ai-assistant/
+├── dashboard/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── Dashboard.tsx      # Main UI — podium, charts, table, insights
+│   │   └── lib/
+│   │       ├── ollama.ts          # Local inference engine + streaming metrics
+│   │       └── openrouter.ts      # Cloud inference engine + SSE streaming
+│   └── package.json
+├── results/
+│   └── benchmark_report.md        # Full written analysis of benchmark findings
+└── README.md
+```
+
+---
+
+*Part of the [AI Engineering Projects](../README.md) portfolio by Rakif Khan*
