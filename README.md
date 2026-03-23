@@ -2,8 +2,6 @@
 
 A collection of production-grade AI engineering systems built with a focus on **reliability, observability, and measurable performance**. While most AI tutorials stop at building a demo chatbot, these projects explore the engineering discipline required to deploy AI systems responsibly.
 
-Built by [Rakif Khan](https://github.com/Rakif215) on an Apple M2 (8GB RAM) — because real constraints build real engineers.
-
 ---
 
 ## Projects
