@@ -65,7 +65,7 @@ The data clearly shows a non-linear degradation of performance as parameter size
 
 macOS natively utilizes `~2.5GB - 3GB` of RAM for the OS layer. When running `Phi-3 Mini (3.8B)`, the total consumed memory breaches the `~6.5GB` threshold. At this point, the OS begins aggressive memory compression and SSD swapping, leading to the massive `15.87s` TTFT outlier. 
 
-Contrarily, `Qwen 2.5 1.5B` fits entirely within the M2's ultra-fast L-cache and unreserved unified memory, resulting in completely unthrottled inference (`77+ TPS`).
+Contrarily, `Qwen 2.5 1.5B` fits comfortably in the unreserved unified memory without swapping, resulting in unthrottled inference (`~73 TPS`).
 
 ## Conclusion
 For engineers building fully local, on-device logic on constrained edge devices like an 8GB Mac M2: **Model size optimization matters more than baseline intelligence.**

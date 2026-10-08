@@ -24,7 +24,7 @@ A fully custom **React + TypeScript analytics dashboard** that connects directly
 |---|---|
 | **Winner Podium** | Auto-computed hero cards showing best TPS, best TTFT, and most consistent model after each benchmark run |
 | **Grouped Cold/Warm Charts** | Bar charts split "Cold Start (Run 1)" vs "Warm Average" to surface memory-swap penalties |
-| **Log-Scale TTFT Chart** | Logarithmic axis prevents outliers (e.g. 18s Phi-3 cold start) from making all other bars look flat |
+| **Log-Scale TTFT Chart** | Logarithmic axis prevents outliers (e.g. the ~16 s Phi-3 cold start) from making all other bars look flat |
 | **Auto-Generated Insights** | 3 intelligence cards auto-populated from results: Memory Pressure Alert, Cloud vs Local winner, Consistency Winner |
 | **Enhanced Results Table** | Green/red highlighting for best/worst values per column, Cold/Warm run badges, and a TPS Consistency (std. dev.) column |
 | **Cloud Baseline Comparison** | OpenRouter integration brings in Gemini 2.5 Flash and Llama 3.1 8B as cloud controls |
@@ -46,9 +46,11 @@ A fully custom **React + TypeScript analytics dashboard** that connects directly
 
 ## Key Findings
 
-- 🏆 **Qwen 2.5 (1.5B)** achieved **101+ TPS** on warm runs — beating the 8B cloud model's streaming rate
-- ⚠️ **Phi-3 Mini** showed an 18s cold TTFT on first load, exposing **macOS SSD swap** behaviour when weights exceed unified memory
-- ✅ After warm-loading, local models consistently outperformed cloud models on **tokens-per-second**, proving zero-network-overhead is a real advantage for streaming tasks
+- 🏆 **Qwen 2.5 (1.5B)** averaged **~73 TPS** — faster than the cloud Llama 3.1 8B baseline (~51 TPS) — with warm TTFT around 0.18 s
+- ⚠️ **Phi-3 Mini (3.8B)** showed a **15.9 s cold TTFT** on first load (then ~1.3 s warm), consistent with memory pressure / SSD swap on an 8 GB machine
+- ⚖️ Model size matters more than "local vs. cloud": Llama 3.2 3B (~38.5 TPS) and Phi-3 Mini (~22.9 TPS) were **slower** than the cloud baseline, so only the smallest local model beat it on streaming speed
+
+*Measured on an Apple M2 (8 GB), 3 prompts per model, temperature 0 — see [`results/benchmark_report.md`](results/benchmark_report.md). Small sample; treat as indicative.*
 
 ---
 
