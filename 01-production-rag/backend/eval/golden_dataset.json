@@ -1,17 +1,242 @@
 [
-    {
-        "question": "What is the token overlap used in this system?",
-        "ground_truth": "The system uses approximately a 100-token overlap to preserve context across chunk boundaries.",
-        "context": [
-            "Chunking Strategy: Implement 500-800 token chunks with a ~100 token overlap to preserve context.",
-            "Data Ingestion: Support PDF, Markdown, or Web pages."
-        ]
-    },
-    {
-        "question": "Which database is used for vector storage?",
-        "ground_truth": "The system uses ChromaDB for vector storage.",
-        "context": [
-            "Vector Storage: Store embeddings in a vector database (ChromaDB or Weaviate)."
-        ]
-    }
+  {
+    "id": "A01",
+    "answerable": true,
+    "question": "What aspirin dose should patients with acute myocardial infarction immediately receive?",
+    "ground_truth": "162-325 mg of aspirin, together with a P2Y12 receptor inhibitor unless contraindicated.",
+    "source": "Clinical_Guidelines_2024.pdf",
+    "page": 1
+  },
+  {
+    "id": "A02",
+    "answerable": true,
+    "question": "Within what time should reperfusion therapy be initiated for PCI-capable facilities?",
+    "ground_truth": "Within 90 minutes.",
+    "source": "Clinical_Guidelines_2024.pdf",
+    "page": 1
+  },
+  {
+    "id": "A03",
+    "answerable": true,
+    "question": "Which drug classes are listed as first-line antihypertensive medications?",
+    "ground_truth": "Thiazide diuretics, calcium channel blockers, and ACE inhibitors or ARBs.",
+    "source": "Clinical_Guidelines_2024.pdf",
+    "page": 1
+  },
+  {
+    "id": "A04",
+    "answerable": true,
+    "question": "What is the target blood pressure for most adults under the hypertension protocol?",
+    "ground_truth": "Less than 130/80 mm Hg.",
+    "source": "Clinical_Guidelines_2024.pdf",
+    "page": 1
+  },
+  {
+    "id": "A05",
+    "answerable": true,
+    "question": "What is the primary treatment for acute decompensated heart failure to relieve congestive symptoms?",
+    "ground_truth": "Intravenous loop diuretics.",
+    "source": "Clinical_Guidelines_2024.pdf",
+    "page": 1
+  },
+  {
+    "id": "A06",
+    "answerable": true,
+    "question": "In which patients should vasodilators be strictly avoided in heart failure exacerbation?",
+    "ground_truth": "Hypotensive patients (vasodilators are strictly avoided in hypotensive states).",
+    "source": "Clinical_Guidelines_2024.pdf",
+    "page": 1
+  },
+  {
+    "id": "A07",
+    "answerable": true,
+    "question": "Which organ function must be regularly assessed during heart failure exacerbation treatment?",
+    "ground_truth": "Renal function (regular assessment of renal function is critical).",
+    "source": "Clinical_Guidelines_2024.pdf",
+    "page": 1
+  },
+  {
+    "id": "A08",
+    "answerable": true,
+    "question": "How many days of Paid Time Off do full-time employees get per calendar year?",
+    "ground_truth": "20 days per calendar year.",
+    "source": "Company_Employee_Handbook.pdf",
+    "page": 1
+  },
+  {
+    "id": "A09",
+    "answerable": true,
+    "question": "How many unused PTO days can be rolled over to the next calendar year?",
+    "ground_truth": "A maximum of 5 days; additional unused days are forfeited.",
+    "source": "Company_Employee_Handbook.pdf",
+    "page": 1
+  },
+  {
+    "id": "A10",
+    "answerable": true,
+    "question": "How far in advance must PTO requests be submitted, and through what system?",
+    "ground_truth": "At least two weeks in advance, through the HR Workday portal.",
+    "source": "Company_Employee_Handbook.pdf",
+    "page": 1
+  },
+  {
+    "id": "A11",
+    "answerable": true,
+    "question": "How many days per week may eligible employees work remotely?",
+    "ground_truth": "Up to two days per week, subject to manager approval.",
+    "source": "Company_Employee_Handbook.pdf",
+    "page": 1
+  },
+  {
+    "id": "A12",
+    "answerable": true,
+    "question": "What are the core business hours employees must be available during while working remotely?",
+    "ground_truth": "10:00 AM to 3:00 PM Eastern Standard Time (EST).",
+    "source": "Company_Employee_Handbook.pdf",
+    "page": 1
+  },
+  {
+    "id": "A13",
+    "answerable": true,
+    "question": "Who should employees report security breaches to?",
+    "ground_truth": "The IT department, immediately.",
+    "source": "Company_Employee_Handbook.pdf",
+    "page": 1
+  },
+  {
+    "id": "A14",
+    "answerable": true,
+    "question": "On Form W-4 Step 3, what amount is multiplied by the number of qualifying children under age 17?",
+    "ground_truth": "$2,200 per qualifying child under age 17.",
+    "source": "daily_use_case.pdf",
+    "page": 1
+  },
+  {
+    "id": "A15",
+    "answerable": true,
+    "question": "On Form W-4 Step 3, what amount is multiplied by the number of other dependents?",
+    "ground_truth": "$500 per other dependent.",
+    "source": "daily_use_case.pdf",
+    "page": 1
+  },
+  {
+    "id": "A16",
+    "answerable": true,
+    "question": "Up to what total income can you use the Step 3 dependent credit calculation (single vs. married filing jointly)?",
+    "ground_truth": "$200,000 or less, or $400,000 or less if married filing jointly.",
+    "source": "daily_use_case.pdf",
+    "page": 1
+  },
+  {
+    "id": "A17",
+    "answerable": true,
+    "question": "What two conditions must be met to claim exemption from withholding for 2026?",
+    "ground_truth": "You had no federal income tax liability in 2025 and you expect to have no federal income tax liability in 2026.",
+    "source": "daily_use_case.pdf",
+    "page": 2
+  },
+  {
+    "id": "A18",
+    "answerable": true,
+    "question": "By what date must you submit a new Form W-4 if you claim exemption from withholding for 2026?",
+    "ground_truth": "By February 16, 2027.",
+    "source": "daily_use_case.pdf",
+    "page": 2
+  },
+  {
+    "id": "A19",
+    "answerable": true,
+    "question": "In the Step 4(b) Deductions Worksheet, what is the standard deduction amount for head of household?",
+    "ground_truth": "$24,150.",
+    "source": "daily_use_case.pdf",
+    "page": 4
+  },
+  {
+    "id": "A20",
+    "answerable": true,
+    "question": "In the Deductions Worksheet, up to what amount of qualified tips can be estimated, and below what total income?",
+    "ground_truth": "Up to $25,000 of qualified tips, if total income is less than $150,000 ($300,000 if married filing jointly).",
+    "source": "daily_use_case.pdf",
+    "page": 4
+  },
+  {
+    "id": "U01",
+    "answerable": false,
+    "question": "What is the recommended heparin dose for patients with unstable angina?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U02",
+    "answerable": false,
+    "question": "Which anticoagulant is recommended for patients with atrial fibrillation?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U03",
+    "answerable": false,
+    "question": "What is the pediatric aspirin dose for Kawasaki disease?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U04",
+    "answerable": false,
+    "question": "What LDL cholesterol target do the guidelines set for patients after a myocardial infarction?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U05",
+    "answerable": false,
+    "question": "How many paid sick days does Acme Corp provide per year?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U06",
+    "answerable": false,
+    "question": "What is Acme Corp's parental leave policy?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U07",
+    "answerable": false,
+    "question": "What percentage does Acme Corp match on employee 401(k) contributions?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U08",
+    "answerable": false,
+    "question": "What is Acme Corp's dress code for office days?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U09",
+    "answerable": false,
+    "question": "What is the California state income tax withholding rate for 2026?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  },
+  {
+    "id": "U10",
+    "answerable": false,
+    "question": "What is the dollar amount of the penalty for submitting an incorrect Form W-4?",
+    "ground_truth": "Not covered by the documents; the system should refuse.",
+    "source": null,
+    "page": null
+  }
 ]

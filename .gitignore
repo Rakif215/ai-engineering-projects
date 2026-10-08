@@ -6,3 +6,4 @@ chroma_db/
 .pytest_cache/
 .coverage
 api_keys.txt
+.venv/

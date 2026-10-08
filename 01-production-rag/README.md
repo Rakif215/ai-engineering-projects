@@ -35,14 +35,18 @@ graph TD
 - **Retrieval:** Hybrid BM25 + Semantic Vector Search for higher recall
 - **Reranking:** Cohere Cross-Encoder (filters out low-relevance semantic hits)
 - **Generation:** Groq (Llama-3) / Google Gemini with strict grounding prompts
-- **Evaluation:** RAGAS framework running 'Faithfulness' checks (CI/CD gated)
+- **Evaluation:** end-to-end script `backend/eval/run_eval.py` (see Evaluation below)
 - **Frontend:** React + Vite
 
 ## The Hallucination Fix
 
 Vector search often returns documents that are *semantically similar* to the question, but don't actually contain the answer. 
 
-Instead of passing these directly to the LLM (which encourages guessing), we use a cross-encoder to score relevance. If the score is low, or the LLM cannot explicitly cite the chunk, the system defaults to a safe refusal.
+Instead of passing these directly to the LLM (which encourages guessing), we use a cross-encoder to rerank the candidates, and a strict prompt tells the LLM to refuse when the context lacks the answer. There is no score threshold, and the API prompt does not currently produce citations (see Evaluation).
+
+## Evaluation
+
+Small-sample run (2026-10-08, 3 sample PDFs): 13/15 judged answers correct (rest partial), 0 false refusals, 10/10 unanswerable questions refused, **0/15 answers cited a source**; p50 latency 1.6 s. 5 answers still await judging (quota). Details and caveats: [backend/eval/RESULTS.md](backend/eval/RESULTS.md).
 
 ## UI Demo
 

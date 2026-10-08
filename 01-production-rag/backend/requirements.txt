@@ -18,3 +18,6 @@ ragas
 pytest
 python-dotenv
 streamlit
+langchain-classic
+rank_bm25
+pyyaml

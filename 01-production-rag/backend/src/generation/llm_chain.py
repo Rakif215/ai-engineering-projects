@@ -28,7 +28,7 @@ class GenerationChain:
 
     def _init_llm(self):
         if self.llm_provider == "groq":
-            self.llm = ChatGroq(model_name="llama-3.1-8b-instant", temperature=0)
+            self.llm = ChatGroq(model_name=os.getenv("VERITAS_GROQ_MODEL", "openai/gpt-oss-20b"), temperature=0)
         else:
             self.llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
             
